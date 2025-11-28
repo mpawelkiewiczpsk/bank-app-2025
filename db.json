@@ -1,0 +1,54 @@
+{
+  "users": [
+    {
+      "login": "mpawel",
+      "pass": "123",
+      "note": "admin systemu"
+    },
+    {
+      "login": "jnowak",
+      "pass": "123",
+      "note": "użytkownik standardowy"
+    },
+    {
+      "login": "akowalska",
+      "pass": "123",
+      "note": "dostęp tylko do odczytu"
+    },
+    {
+      "login": "tstudent",
+      "pass": "123",
+      "note": "konto testowe dla studentów"
+    },
+    {
+      "login": "dev_front",
+      "pass": "123",
+      "note": "frontend developer"
+    },
+    {
+      "login": "dev_back",
+      "pass": "123",
+      "note": "backend developer"
+    },
+    {
+      "login": "pmarek",
+      "pass": "123",
+      "note": "project manager"
+    },
+    {
+      "login": "tester1",
+      "pass": "123",
+      "note": "QA – testy manualne"
+    },
+    {
+      "login": "automation_bot",
+      "pass": "123",
+      "note": "konto techniczne do integracji"
+    },
+    {
+      "login": "support_user",
+      "pass": "123",
+      "note": "dział wsparcia"
+    }
+  ]
+}
