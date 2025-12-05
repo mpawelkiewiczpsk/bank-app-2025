@@ -11,27 +11,20 @@ import {
 } from "react-native";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
-import * as FileSystem from "expo-file-system";
 
 const PhotoScreen: React.FC = () => {
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
-  const [mediaPermissionStatus, requestMediaPermission] =
-    MediaLibrary.usePermissions();
 
   const cameraRef = useRef<CameraView | null>(null);
 
   const [photoUri, setPhotoUri] = useState<string | null>(null);
-  const [photoBase64, setPhotoBase64] = useState<string | null>(null);
+  const [photoBase64, setPhotoBase64] = useState<string | undefined>(undefined);
   const [isSaving, setIsSaving] = useState(false);
-  const [isConverting, setIsConverting] = useState(false);
 
   useEffect(() => {
     const askPermissions = async () => {
       if (!cameraPermission?.granted) {
         await requestCameraPermission();
-      }
-      if (!mediaPermissionStatus?.granted) {
-        await requestMediaPermission();
       }
     };
 
@@ -48,10 +41,11 @@ const PhotoScreen: React.FC = () => {
       const photo = await cameraRef.current.takePictureAsync({
         quality: 0.8,
         skipProcessing: false,
+        base64: true,
       });
 
       setPhotoUri(photo.uri);
-      setPhotoBase64(null); // reset, przeliczmy na nowo dla nowego zdjęcia
+      setPhotoBase64(photo.base64);
     } catch (error) {
       console.error(error);
       Alert.alert("Błąd", "Nie udało się zrobić zdjęcia");
@@ -74,30 +68,6 @@ const PhotoScreen: React.FC = () => {
       Alert.alert("Błąd", "Nie udało się zapisać zdjęcia w galerii");
     } finally {
       setIsSaving(false);
-    }
-  };
-
-  const handleConvertToBase64 = async () => {
-    if (!photoUri) {
-      Alert.alert("Brak zdjęcia", "Najpierw zrób zdjęcie");
-      return;
-    }
-
-    try {
-      setIsConverting(true);
-      const base64 = await FileSystem.readAsStringAsync(photoUri, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
-      setPhotoBase64(base64);
-      Alert.alert(
-        "OK",
-        "Zdjęcie zostało przekonwertowane na base64 (gotowe do wysyłki na backend)",
-      );
-    } catch (error) {
-      console.error(error);
-      Alert.alert("Błąd", "Nie udało się przekonwertować zdjęcia");
-    } finally {
-      setIsConverting(false);
     }
   };
 
@@ -126,7 +96,6 @@ const PhotoScreen: React.FC = () => {
 
   return (
     <View style={styles.root}>
-      {/* Podgląd kamery */}
       {!photoUri && (
         <View style={styles.cameraContainer}>
           <CameraView
@@ -145,7 +114,6 @@ const PhotoScreen: React.FC = () => {
         </View>
       )}
 
-      {/* Podgląd zrobionego zdjęcia */}
       {photoUri && (
         <View style={styles.previewContainer}>
           <Image
@@ -156,7 +124,6 @@ const PhotoScreen: React.FC = () => {
         </View>
       )}
 
-      {/* Przyciski akcji */}
       <View style={styles.actionsRow}>
         <TouchableOpacity style={styles.button} onPress={handleTakePhoto}>
           <Text style={styles.buttonText}>
@@ -177,21 +144,6 @@ const PhotoScreen: React.FC = () => {
         </TouchableOpacity>
       </View>
 
-      <View style={styles.actionsRow}>
-        <TouchableOpacity
-          style={[styles.button, !photoUri && styles.buttonDisabled]}
-          onPress={handleConvertToBase64}
-          disabled={!photoUri || isConverting}
-        >
-          {isConverting ? (
-            <ActivityIndicator />
-          ) : (
-            <Text style={styles.buttonText}>Konwertuj do base64</Text>
-          )}
-        </TouchableOpacity>
-      </View>
-
-      {/* Podgląd base64 (skrót) */}
       {photoBase64 && (
         <ScrollView style={styles.base64Container}>
           <Text style={styles.base64Label}>Base64 (początek):</Text>
@@ -253,13 +205,13 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     borderRadius: 16,
     overflow: "hidden",
-    backgroundColor: "#000",
+    backgroundColor: "#fff",
     justifyContent: "center",
     alignItems: "center",
   },
   previewImage: {
-    width: "100%",
-    height: "100%",
+    width: 400,
+    height: 400,
   },
   actionsRow: {
     flexDirection: "row",
