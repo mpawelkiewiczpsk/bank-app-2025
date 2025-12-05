@@ -12,6 +12,8 @@ import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Ionicons } from "@expo/vector-icons";
 import type { RootStackParamList } from "../navigation/types";
+import { useAppContext } from "../context/AppContext";
+
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 type Tile = {
   key: string;
@@ -22,6 +24,7 @@ type Tile = {
 };
 export default function HomeScreen() {
   const navigation = useNavigation<Nav>();
+  const { state } = useAppContext();
   const [userInfo, setUserInfo] = useState("");
 
   const getDataFromSecureStorage = async () => {
@@ -51,11 +54,11 @@ export default function HomeScreen() {
         navigation.navigate("AppTabs", { screen: "Settings" } as never),
     },
     {
-      key: "news",
-      title: "Aktualności",
-      icon: "newspaper",
+      key: "photo",
+      title: "Photo Screen",
+      icon: "camera",
       color: "#00C853",
-      onPress: () => {},
+      onPress: () => navigation.navigate("Photo"),
     },
     {
       key: "help",
@@ -67,10 +70,7 @@ export default function HomeScreen() {
   ];
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Home</Text>
-      <Text style={{ color: "#fff", fontSize: 25 }}>
-        {JSON.stringify(userInfo)}
-      </Text>
+      <Text style={styles.title}>Witaj {state?.displayName}</Text>
       <FlatList
         data={tiles}
         keyExtractor={(item) => item.key}

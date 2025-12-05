@@ -17,6 +17,7 @@ import LoginScreen from "../screens/LoginScreen";
 import HomeScreen from "../screens/HomeScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import ProfileScreen from "../screens/ProfileScreen";
+import PhotoScreen from "../screens/PhotoScreen";
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tabs = createBottomTabNavigator<AppTabsParamList>();
 const AppDarkTheme: Theme = {
@@ -75,7 +76,7 @@ export default function RootNavigator() {
   };
   return (
     <NavigationContainer theme={isDark ? AppDarkTheme : DefaultTheme}>
-      <Stack.Navigator screenOptions={screenOptions} initialRouteName="Login">
+      <Stack.Navigator screenOptions={screenOptions} initialRouteName="AppTabs">
         <Stack.Screen
           name="Login"
           component={LoginScreen}
@@ -90,6 +91,11 @@ export default function RootNavigator() {
           name="Profile"
           component={ProfileScreen}
           options={{ title: "Profil użytkownika" }}
+        />
+        <Stack.Screen
+          name="Photo"
+          component={PhotoScreen}
+          options={{ title: "Photo" }}
         />
       </Stack.Navigator>
     </NavigationContainer>

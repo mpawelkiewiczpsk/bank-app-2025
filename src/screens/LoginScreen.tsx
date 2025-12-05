@@ -16,6 +16,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import type { RootStackParamList } from "../navigation/types";
 import { login, getUsers } from "../api/auth";
+import { useAppContext } from "../context/AppContext";
+
 type Props = NativeStackScreenProps<RootStackParamList, "Login">;
 const COLORS = {
   bg: "#0f1420",
@@ -34,6 +36,7 @@ interface User {
 
 export default function LoginScreen({ navigation }: Props) {
   const [available, setAvailable] = useState(false);
+  const { setDisplayName, state } = useAppContext();
   const [types, setTypes] = useState<LocalAuthentication.AuthenticationType[]>(
     [],
   );
@@ -51,7 +54,11 @@ export default function LoginScreen({ navigation }: Props) {
 
     const loggedUser = await getData("loggedUser");
 
+    console.log(loggedUser);
+
     if (loggedUser) {
+      setDisplayName(loggedUser.login);
+
       const result = await LocalAuthentication.authenticateAsync({
         promptMessage: "Zaloguj się biometrią",
         cancelLabel: "Anuluj",
@@ -84,7 +91,8 @@ export default function LoginScreen({ navigation }: Props) {
   const authenticate = async () => {
     login(email, pwd).then(async (result: User[]) => {
       if (result.length) {
-        await save("loggedUser", result[0]);
+        await storeData("loggedUser", result[0]);
+        setDisplayName(result[0]?.login);
         navigation.replace("AppTabs");
       }
     });
@@ -103,7 +111,7 @@ export default function LoginScreen({ navigation }: Props) {
           </View>
           <Text style={styles.title}>Zaloguj się</Text>
           <Text style={styles.subtitle}>Witaj ponownie</Text>
-          <Text style={styles.subtitle}>{JSON.stringify(users)}</Text>
+          <Text style={styles.subtitle}>Tutaj: {state?.displayName}</Text>
         </View>
         <View style={styles.card}>
           <Text style={styles.label}>E-mail</Text>

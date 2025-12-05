@@ -2,6 +2,7 @@ export type RootStackParamList = {
   Login: undefined;
   AppTabs: undefined;
   Profile: { userId: string };
+  Photo: undefined;
 };
 export type AppTabsParamList = {
   Home: undefined;
